@@ -1,4 +1,7 @@
 const router = require('express').Router();
+const comments = require('./comments');
+
+router.use('/:postId/comments', comments);
 
 router.get('/', (req, res) => {
   return res.status(200).json({
@@ -6,9 +9,9 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:postId', (req, res) => {
   return res.status(200).json({
-    msg: `returning post ${req.params.id}...`,
+    msg: `returning post ${req.params.postId}...`,
   });
 });
 
@@ -18,9 +21,9 @@ router.post('/', (req, res) => {
   });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:postId', (req, res) => {
   return res.status(200).json({
-    msg: `deleting post ${req.params.id}...`,
+    msg: `deleting post ${req.params.postId}...`,
   });
 });
 

@@ -1,26 +1,26 @@
-const router = require('express').Router();
+const router = require('express').Router({ mergeParams: true });
 
 router.get('/', (req, res) => {
   return res.status(200).json({
-    msg: 'returning all comments...',
+    msg: `returning all comments from post ${req.params.postId}...`,
   });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:commentId', (req, res) => {
   return res.status(200).json({
-    msg: `returning comment ${req.params.id}...`,
+    msg: `returning comment ${req.params.commentId} from post ${req.params.postId}...`,
   });
 });
 
 router.post('/', (req, res) => {
   return res.status(200).json({
-    msg: 'submitting new comment...',
+    msg: `submitting new comment for post ${req.params.postId}...`,
   });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:commentId', (req, res) => {
   return res.status(200).json({
-    msg: `deleting comment ${req.params.id}...`,
+    msg: `deleting comment ${req.params.commentId} from post ${req.params.postId}...`,
   });
 });
 
