@@ -1,30 +1,20 @@
 const router = require('express').Router();
 const comments = require('./comments');
+const {
+  getAllPosts,
+  getSinglePost,
+  submitNewPost,
+  deleteSinglePost,
+} = require('../controllers/postsController');
 
 router.use('/:postId/comments', comments);
 
-router.get('/', (req, res) => {
-  return res.status(200).json({
-    msg: 'returning all posts...',
-  });
-});
+router.get('/', getAllPosts);
 
-router.get('/:postId', (req, res) => {
-  return res.status(200).json({
-    msg: `returning post ${req.params.postId}...`,
-  });
-});
+router.get('/:postId', getSinglePost);
 
-router.post('/', (req, res) => {
-  return res.status(200).json({
-    msg: 'submitting new post...',
-  });
-});
+router.post('/', submitNewPost);
 
-router.delete('/:postId', (req, res) => {
-  return res.status(200).json({
-    msg: `deleting post ${req.params.postId}...`,
-  });
-});
+router.delete('/:postId', deleteSinglePost);
 
 module.exports = router;
