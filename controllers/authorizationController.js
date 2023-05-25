@@ -41,11 +41,34 @@ const registerUser = [
   },
 ];
 
-const loginUser = async (req, res, next) => {
-  return res.status(200).json({
-    msg: 'submitting login data...',
-  });
-};
+const loginUser = [
+  emailValidator,
+  checkValidations,
+  async (req, res, next) => {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res
+        .status(300)
+        .json({ message: 'No user exists with that email' });
+    }
+
+    bcrypt.compare(req.body.password, user.password, (err, passwordsMatch) => {
+      if (err) {
+        return res.json({ err });
+      }
+
+      if (!passwordsMatch) {
+        return res.status(200).json({
+          message: 'Incorrect password, please try again',
+        });
+      }
+
+      const { firstName, lastName, email, isAdmin } = user;
+      return res.status(200).json({ firstName, lastName, email, isAdmin });
+    });
+  },
+];
 
 module.exports = {
   registerUser,
