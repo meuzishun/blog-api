@@ -1,17 +1,13 @@
 const router = require('express').Router();
 const posts = require('./posts');
+const {
+  registerUser,
+  loginUser,
+} = require('../controllers/authorizationController');
 
-router.post('/register', (req, res) => {
-  return res.status(200).json({
-    msg: 'submitting register data...',
-  });
-});
+router.post('/register', registerUser);
 
-router.post('/login', (req, res) => {
-  return res.status(200).json({
-    msg: 'submitting login data...',
-  });
-});
+router.post('/login', loginUser);
 
 router.use('/posts', posts);
 
