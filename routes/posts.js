@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { isAuth } = require('../config/passport');
+const { isAuth, isAdmin } = require('../config/passport');
 const comments = require('./comments');
 const {
   getAllPosts,
@@ -14,8 +14,8 @@ router.get('/', isAuth, getAllPosts);
 
 router.get('/:postId', isAuth, getSinglePost);
 
-router.post('/', submitNewPost);
+router.post('/', isAuth, isAdmin, submitNewPost);
 
-router.delete('/:postId', deleteSinglePost);
+router.delete('/:postId', isAuth, isAdmin, deleteSinglePost);
 
 module.exports = router;

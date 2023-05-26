@@ -29,6 +29,17 @@ passport.use(strategy);
 
 const isAuth = passport.authenticate('jwt', { session: false });
 
+const isAdmin = (req, res, next) => {
+  //TODO: actually check the user in the database here...
+  if (req.user.isAdmin) {
+    next();
+  }
+  res.status(400).json({
+    msg: 'Not allowed',
+  });
+};
+
 module.exports = {
   isAuth,
+  isAdmin,
 };
