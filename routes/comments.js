@@ -1,4 +1,5 @@
 const router = require('express').Router({ mergeParams: true });
+const { isAuth } = require('../config/passport');
 const {
   getAllComments,
   getSingleComment,
@@ -6,11 +7,11 @@ const {
   deleteSingleComment,
 } = require('../controllers/commentsController');
 
-router.get('/', getAllComments);
+router.get('/', isAuth, getAllComments);
 
-router.get('/:commentId', getSingleComment);
+router.get('/:commentId', isAuth, getSingleComment);
 
-router.post('/', submitNewComment);
+router.post('/', isAuth, submitNewComment);
 
 router.delete('/:commentId', deleteSingleComment);
 

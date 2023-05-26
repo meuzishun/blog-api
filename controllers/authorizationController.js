@@ -8,6 +8,7 @@ const {
   checkValidations,
   checkForCurrentUser,
 } = require('../lib/inputValidators');
+const { issueJWT } = require('../lib/utils');
 
 const registerUser = [
   firstNameValidator,
@@ -21,6 +22,7 @@ const registerUser = [
       if (err) {
         return next(err);
       }
+
       try {
         const user = new User({
           firstName: req.body.firstName,
@@ -29,9 +31,16 @@ const registerUser = [
           password: hashedPassword,
           isAdmin: false,
         });
+
         await user.save();
+        const token = issueJWT(user);
+
         return res.status(200).json({
-          user,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          isAdmin: user.isAdmin,
+          token,
         });
       } catch (err) {
         console.log(err);
@@ -64,8 +73,15 @@ const loginUser = [
         });
       }
 
-      const { firstName, lastName, email, isAdmin } = user;
-      return res.status(200).json({ firstName, lastName, email, isAdmin });
+      const token = issueJWT(user);
+
+      return res.status(200).json({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        token,
+      });
     });
   },
 ];

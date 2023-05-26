@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { isAuth } = require('../config/passport');
 const comments = require('./comments');
 const {
   getAllPosts,
@@ -9,9 +10,9 @@ const {
 
 router.use('/:postId/comments', comments);
 
-router.get('/', getAllPosts);
+router.get('/', isAuth, getAllPosts);
 
-router.get('/:postId', getSinglePost);
+router.get('/:postId', isAuth, getSinglePost);
 
 router.post('/', submitNewPost);
 
