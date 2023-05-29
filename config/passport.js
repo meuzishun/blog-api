@@ -27,16 +27,33 @@ const strategy = new Strategy(options, (payload, done) => {
 
 passport.use(strategy);
 
-const isAuth = passport.authenticate('jwt', { session: false });
+const isAuth = (req, res, next) => {
+  passport.authenticate('jwt', { session: false }, (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    req.login(user, { session: false }, (err) => {
+      if (err) {
+        return next(err);
+      }
+      next();
+    });
+  })(req, res, next);
+};
 
 const isAdmin = (req, res, next) => {
-  //TODO: actually check the user in the database here...
   if (req.user.isAdmin) {
     next();
+  } else {
+    res.status(403).json({
+      msg: 'Only admin are allowed',
+    });
   }
-  res.status(400).json({
-    msg: 'Not allowed',
-  });
 };
 
 module.exports = {

@@ -36,11 +36,13 @@ const registerUser = [
         const token = issueJWT(user);
 
         return res.status(200).json({
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          isAdmin: user.isAdmin,
-          token,
+          user: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            isAdmin: user.isAdmin,
+          },
+          jwt: token,
         });
       } catch (err) {
         console.log(err);
@@ -76,11 +78,13 @@ const loginUser = [
       const token = issueJWT(user);
 
       return res.status(200).json({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        token,
+        user: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          isAdmin: user.isAdmin,
+        },
+        jwt: token,
       });
     });
   },
