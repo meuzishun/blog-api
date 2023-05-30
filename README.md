@@ -1,30 +1,33 @@
-Blog API
+# Blog API
 
-Overview
+## Overview
 
-Journal
+## Journal
 
 I began the process by creating the models for the data needed: user, post, comment. I make a list for each model, outlining what data was needed for each.
 
 User:
--firstname
--lastname
--email (used for log in)
--password (later changed to hashedPassword and salt)
--isAdmin
+
+- firstname
+- lastname
+- email (used for log in)
+- hashed password
+- isAdmin (Boolean)
 
 Post:
--author
--title
--content
--timestamp
--isPublished
+
+- author
+- title
+- content
+- timestamp
+- isPublished (Boolean)
 
 Comment:
--author
--post
--content
--timestamp
+
+- author
+- post
+- content
+- timestamp
 
 Since I am using MongoDB, I installed mongoose and imported it to each file to create schemas and later exporting the models. Most of the data for each schema was required. Several data types were string, but some are references to other data types (e.g. a post author is referencing a user's id). I referenced models from previous projects so I copied over a virtual for each model that just returns the url with the database id... not sure if they'll be needed. Then I setup the database on MongoDB. Not too much going on here yet, just grabbed the connection url and stored it in a .env file (make sure to add the .env to the .gitignore file!).
 
@@ -36,4 +39,15 @@ After that, I started working on the routes. At first I wanted to house all the 
 const router = require('express').Router({ mergeParams: true });
 ```
 
-I used the app Postman to test these routes. Postman lets you store your test routes in a collection for reuse.
+I used the app Postman to test these routes. Postman lets you store your test routes in a collection for reuse. It is a good idea to name and save the post tabs in Postman to a collection for future reuse.
+
+I then extracted the post and comment controllers and put them in separate files from the routes. Generally considered good practice and I also find it very helpful to conceptualize everything this way. As of this point, the controllers were just sending basic JSON to confirm that they were hooked up properly.
+
+Up next was the database. I just setup a MongoDB and got the connection URL which I stored in the .env file. I did create a special file, "database.js", for creating the database connection with mongoose and put it in a new directory, "config". Again, separation of concerns. This "config" directory was helpful later on with authentication and authorization.
+
+When working on registering and logging in users, I decided to extract these controllers as well, "authorizationController.js".
+
+- lib directory holds validators, issueJWT, generation of key pairs
+- authentication and authorization, PassportJS, extracting isAuth and isAdmin
+- thing about Passport passing on user after auth
+- post and comment controllers, try/catch, checks that don't work
