@@ -1,72 +1,62 @@
 const Post = require('../models/post');
-const User = require('../models/user');
-const { titleValidator, contentValidator } = require('../lib/inputValidators');
 
 const getAllPosts = async (req, res) => {
-  const posts = await Post.find({});
-
-  return res.status(200).json({
-    msg: 'returning all posts...',
-    posts,
-  });
-};
-
-const getSinglePost = async (req, res) => {
   try {
-    const post = await Post.findOne({ title: req.params.title });
-
-    if (!post) {
-      return res
-        .status(300)
-        .json({ message: 'No post exists with that title' });
-    }
+    const posts = await Post.find({});
 
     return res.status(200).json({
-      msg: `returning post ${req.params.title}...`,
+      msg: 'returning all posts...',
+      posts,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getSinglePost = async (req, res, next) => {
+  try {
+    const post = await Post.findOne({ _id: req.params.postId });
+
+    return res.status(200).json({
+      msg: `returning post ${req.params.postId}...`,
       post,
     });
   } catch (err) {
-    res.status(200).json({
-      err,
-    });
+    next(err);
   }
 };
 
-const submitNewPost = [
-  titleValidator,
-  contentValidator,
-  async (req, res) => {
-    try {
-      const post = new Post({
-        author: req.user._id,
-        title: req.body.title,
-        content: req.body.content,
-        timestamp: Date.now(),
-        isPublished: true,
-      });
+const submitNewPost = async (req, res, next) => {
+  try {
+    const post = new Post({
+      author: req.user._id,
+      title: req.body.title,
+      content: req.body.content,
+      timestamp: Date.now(),
+      isPublished: true,
+    });
 
-      await post.save();
+    await post.save();
 
-      return res.status(200).json({
-        msg: 'submitting new post...',
-        post,
-      });
-    } catch (err) {
-      return res.status(300).json({ err });
-    }
-  },
-];
+    return res.status(200).json({
+      msg: 'submitting new post...',
+      post,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
-const deleteSinglePost = async (req, res) => {
+const deleteSinglePost = async (req, res, next) => {
   try {
     await Post.deleteOne({ _id: req.params.postId });
-  } catch (err) {
-    res.status(500).json(err);
-  }
 
-  return res.status(200).json({
-    msg: `deleting post ${req.params.postId}...`,
-  });
+    return res.status(200).json({
+      msg: `deleting post ${req.params.postId}...`,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 module.exports = {
