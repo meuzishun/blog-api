@@ -1,11 +1,13 @@
 require('dotenv').config();
 require('./config/database');
 const express = require('express');
+const cors = require('cors');
 const passport = require('passport');
 const routes = require('./routes/index');
 
 const app = express();
 
+app.use(cors());
 app.use(passport.initialize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
