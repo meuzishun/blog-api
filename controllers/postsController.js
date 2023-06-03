@@ -2,7 +2,7 @@ const Post = require('../models/post');
 
 const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find({});
+    const posts = await Post.find({}).populate('author');
 
     return res.status(200).json({
       msg: 'returning all posts...',
