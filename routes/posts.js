@@ -11,7 +11,7 @@ const {
 
 router.use('/:postId/comments', comments);
 
-router.get('/', isAuth, getAllPosts);
+router.get('/', getAllPosts);
 
 router.get('/:postId', isAuth, getSinglePost);
 
