@@ -15,7 +15,9 @@ const getAllPosts = async (req, res) => {
 
 const getSinglePost = async (req, res, next) => {
   try {
-    const post = await Post.findOne({ _id: req.params.postId });
+    const post = await Post.findOne({ _id: req.params.postId }).populate(
+      'author'
+    );
 
     return res.status(200).json({
       msg: `returning post ${req.params.postId}...`,
