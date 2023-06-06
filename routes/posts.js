@@ -13,7 +13,7 @@ router.use('/:postId/comments', comments);
 
 router.get('/', getAllPosts);
 
-router.get('/:postId', isAuth, getSinglePost);
+router.get('/:postId', getSinglePost);
 
 router.post(
   '/',
