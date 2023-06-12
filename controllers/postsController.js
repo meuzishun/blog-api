@@ -5,6 +5,7 @@ const getAllPosts = async (req, res) => {
     const posts = await Post.find({}).populate('author');
 
     return res.status(200).json({
+      user: req.user,
       msg: 'returning all posts...',
       posts,
     });
@@ -20,6 +21,7 @@ const getSinglePost = async (req, res, next) => {
     );
 
     return res.status(200).json({
+      user: req.user,
       msg: `returning post ${req.params.postId}...`,
       post,
     });
