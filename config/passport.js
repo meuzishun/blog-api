@@ -34,8 +34,8 @@ const isAuth = (req, res, next) => {
     }
 
     if (!user) {
-      // return res.status(401).json({ message: 'Unauthorized' });
-      req.user = null;
+      return res.status(400).json({ message: 'Unauthorized' });
+      // req.user = null;
       return next();
     }
 
@@ -54,7 +54,7 @@ const isAdmin = (req, res, next) => {
   if (req.user.isAdmin) {
     next();
   } else {
-    res.status(403).json({
+    res.status(400).json({
       msg: 'Only admin are allowed',
     });
   }

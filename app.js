@@ -3,7 +3,7 @@ require('./config/database');
 const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
-const { isAuth, isAdmin } = require('./config/passport');
+// const { isAuth, isAdmin } = require('./config/passport');
 const routes = require('./routes/index');
 
 const app = express();
@@ -12,7 +12,7 @@ app.use(cors());
 app.use(passport.initialize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(isAuth);
+// app.use(isAuth);
 // app.use(isAdmin);
 
 app.use(routes);

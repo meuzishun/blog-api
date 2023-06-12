@@ -20,7 +20,7 @@ const registerUser = async (req, res, next) => {
       await user.save();
       const token = issueJWT(user);
 
-      return res.status(200).json({
+      return res.status(201).json({
         user: {
           firstName: user.firstName,
           lastName: user.lastName,
@@ -39,7 +39,7 @@ const loginUser = async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
 
   if (!user) {
-    return res.status(300).json({ message: 'No user exists with that email' });
+    return res.status(400).json({ message: 'No user exists with that email' });
   }
 
   bcrypt.compare(req.body.password, user.password, (err, passwordsMatch) => {
@@ -48,14 +48,14 @@ const loginUser = async (req, res) => {
     }
 
     if (!passwordsMatch) {
-      return res.status(200).json({
+      return res.status(400).json({
         message: 'Incorrect password, please try again',
       });
     }
 
     const token = issueJWT(user);
 
-    return res.status(200).json({
+    return res.status(201).json({
       user: {
         firstName: user.firstName,
         lastName: user.lastName,
