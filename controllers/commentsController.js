@@ -2,7 +2,9 @@ const Comment = require('../models/comment');
 
 const getAllComments = async (req, res, next) => {
   try {
-    const comments = await Comment.find({ post: req.params.postId });
+    const comments = await Comment.find({ post: req.params.postId }).populate(
+      'author'
+    );
 
     return res.status(200).json({
       msg: `returning all comments from post ${req.params.postId}...`,
