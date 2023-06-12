@@ -34,15 +34,19 @@ const isAuth = (req, res, next) => {
     }
 
     if (!user) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      // return res.status(401).json({ message: 'Unauthorized' });
+      req.user = null;
+      return next();
     }
 
-    req.login(user, { session: false }, (err) => {
-      if (err) {
-        return next(err);
-      }
-      next();
-    });
+    if (user) {
+      req.login(user, { session: false }, (err) => {
+        if (err) {
+          return next(err);
+        }
+        next();
+      });
+    }
   })(req, res, next);
 };
 
