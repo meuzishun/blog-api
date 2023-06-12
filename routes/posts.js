@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const { isAuth, isAdmin } = require('../config/passport');
 const { titleValidator, contentValidator } = require('../lib/inputValidators');
 const comments = require('./comments');
 const {
@@ -15,15 +14,8 @@ router.get('/', getAllPosts);
 
 router.get('/:postId', getSinglePost);
 
-router.post(
-  '/',
-  isAuth,
-  isAdmin,
-  titleValidator,
-  contentValidator,
-  submitNewPost
-);
+router.post('/', titleValidator, contentValidator, submitNewPost);
 
-router.delete('/:postId', isAuth, isAdmin, deleteSinglePost);
+router.delete('/:postId', deleteSinglePost);
 
 module.exports = router;
