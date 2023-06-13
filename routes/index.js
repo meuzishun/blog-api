@@ -6,7 +6,6 @@ const {
   emailValidator,
   passwordValidator,
   checkValidations,
-  checkForCurrentUser,
 } = require('../lib/inputValidators');
 const {
   registerUser,
@@ -21,7 +20,6 @@ router.post(
   emailValidator,
   passwordValidator,
   checkValidations,
-  checkForCurrentUser,
   registerUser
 );
 
