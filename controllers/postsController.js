@@ -7,10 +7,7 @@ const Post = require('../models/post');
 const getAllPosts = asyncHandler(async (req, res) => {
   const posts = await Post.find({}).populate('author');
 
-  return res.status(201).json({
-    msg: 'returning all posts...',
-    posts,
-  });
+  return res.status(200).json({ posts });
 });
 
 // @desc    Read a single post
@@ -21,10 +18,7 @@ const getSinglePost = asyncHandler(async (req, res) => {
     'author'
   );
 
-  return res.status(200).json({
-    msg: `returning post ${req.params.postId}...`,
-    post,
-  });
+  return res.status(200).json({ post });
 });
 
 // @desc    Create a new post
@@ -39,10 +33,7 @@ const submitNewPost = asyncHandler(async (req, res) => {
     isPublished: true,
   });
 
-  return res.status(200).json({
-    msg: 'submitting new post...',
-    post,
-  });
+  return res.status(201).json({ post });
 });
 
 // @desc    Delete a single post
@@ -52,7 +43,7 @@ const deleteSinglePost = asyncHandler(async (req, res) => {
   await Post.deleteOne({ _id: req.params.postId });
 
   return res.status(200).json({
-    msg: `deleting post ${req.params.postId}...`,
+    msg: `post ${req.params.postId} deleted`,
   });
 });
 
