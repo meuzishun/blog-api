@@ -59,20 +59,20 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    res.status(400);
+    res.status(404);
     throw new Error('No user exists with that email');
   }
 
   const passwordsMatch = await bcrypt.compare(req.body.password, user.password);
 
   if (!passwordsMatch) {
-    res.status(400);
+    res.status(401);
     throw new Error('Incorrect password, please try again');
   }
 
   const token = issueJWT(user);
 
-  return res.status(201).json({
+  return res.status(200).json({
     user: {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -92,7 +92,7 @@ const userProfile = asyncHandler(async (req, res) => {
   const userId = getUserIdFromJWT(token);
 
   if (!userId) {
-    res.status(400);
+    res.status(401);
     throw new Error('Not verified');
   }
 
@@ -103,7 +103,7 @@ const userProfile = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 
-  res.status(201).json({
+  res.status(200).json({
     user: {
       firstName: user.firstName,
       lastName: user.lastName,
