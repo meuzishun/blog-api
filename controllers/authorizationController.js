@@ -1,7 +1,10 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
-const { issueJWT } = require('../lib/utils');
+const { issueJWT, getUserIdFromJWT } = require('../lib/utils');
 
+// @desc    Register new user
+// @route   POST /register
+// @access  Public
 const registerUser = async (req, res, next) => {
   bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
     if (err) {
@@ -35,6 +38,9 @@ const registerUser = async (req, res, next) => {
   });
 };
 
+// @desc    Login user
+// @route   POST /login
+// @access  Public
 const loginUser = async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
 
@@ -67,7 +73,40 @@ const loginUser = async (req, res) => {
   });
 };
 
+// @desc    Get user data
+// @route   GET /profile
+// @access  Private
+const userProfile = async (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  const userId = getUserIdFromJWT(token);
+
+  if (!userId) {
+    return res.status(400).json({
+      msg: 'Not verified',
+    });
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res.status(400).json({
+      msg: 'User not found',
+    });
+  }
+
+  res.status(200).json({
+    user: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    },
+  });
+};
+
 module.exports = {
   registerUser,
   loginUser,
+  userProfile,
 };
