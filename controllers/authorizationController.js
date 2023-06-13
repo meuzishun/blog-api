@@ -1,3 +1,4 @@
+const asyncHandler = require('express-async-handler');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const { issueJWT, getUserIdFromJWT } = require('../lib/utils');
@@ -5,97 +6,104 @@ const { issueJWT, getUserIdFromJWT } = require('../lib/utils');
 // @desc    Register new user
 // @route   POST /register
 // @access  Public
-const registerUser = async (req, res, next) => {
-  bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
-    if (err) {
-      return next(err);
-    }
+const registerUser = asyncHandler(async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
 
-    try {
-      const user = new User({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        email: req.body.email,
-        password: hashedPassword,
-        isAdmin: false,
-      });
+  if (!firstName || !lastName || !email || !password) {
+    res.status(400);
+    throw new Error('Please add all fields');
+  }
 
-      await user.save();
-      const token = issueJWT(user);
+  const userExists = await User.findOne({ email });
 
-      return res.status(201).json({
-        user: {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          isAdmin: user.isAdmin,
-        },
-        jwt: token,
-      });
-    } catch (err) {
-      return next(err);
-    }
+  if (userExists) {
+    res.status(400);
+    throw new Error('User already exists');
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  const user = await User.create({
+    firstName,
+    lastName,
+    email,
+    password: hashedPassword,
+    isAdmin: false,
   });
-};
+
+  if (!user) {
+    res.status(400);
+    throw new Error('User not found');
+  }
+
+  const token = issueJWT(user);
+
+  return res.status(201).json({
+    user: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    },
+    jwt: token,
+  });
+});
 
 // @desc    Login user
 // @route   POST /login
 // @access  Public
-const loginUser = async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
+const loginUser = asyncHandler(async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+
+  const user = await User.findOne({ email });
 
   if (!user) {
-    return res.status(400).json({ message: 'No user exists with that email' });
+    res.status(400);
+    throw new Error('No user exists with that email');
   }
 
-  bcrypt.compare(req.body.password, user.password, (err, passwordsMatch) => {
-    if (err) {
-      return res.json({ err });
-    }
+  const passwordsMatch = await bcrypt.compare(req.body.password, user.password);
 
-    if (!passwordsMatch) {
-      return res.status(400).json({
-        message: 'Incorrect password, please try again',
-      });
-    }
+  if (!passwordsMatch) {
+    res.status(400);
+    throw new Error('Incorrect password, please try again');
+  }
 
-    const token = issueJWT(user);
+  const token = issueJWT(user);
 
-    return res.status(201).json({
-      user: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        isAdmin: user.isAdmin,
-      },
-      jwt: token,
-    });
+  return res.status(201).json({
+    user: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    },
+    jwt: token,
   });
-};
+});
 
 // @desc    Get user data
 // @route   GET /profile
 // @access  Private
-const userProfile = async (req, res, next) => {
+const userProfile = asyncHandler(async (req, res) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   const userId = getUserIdFromJWT(token);
 
   if (!userId) {
-    return res.status(400).json({
-      msg: 'Not verified',
-    });
+    res.status(400);
+    throw new Error('Not verified');
   }
 
   const user = await User.findById(userId);
 
   if (!user) {
-    return res.status(400).json({
-      msg: 'User not found',
-    });
+    res.status(400);
+    throw new Error('User not found');
   }
 
-  res.status(200).json({
+  res.status(201).json({
     user: {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -103,7 +111,7 @@ const userProfile = async (req, res, next) => {
       isAdmin: user.isAdmin,
     },
   });
-};
+});
 
 module.exports = {
   registerUser,
