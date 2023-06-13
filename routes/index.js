@@ -11,6 +11,7 @@ const {
 const {
   registerUser,
   loginUser,
+  userProfile,
 } = require('../controllers/authorizationController');
 
 router.post(
@@ -25,6 +26,8 @@ router.post(
 );
 
 router.post('/login', emailValidator, checkValidations, loginUser);
+
+router.get('/profile', userProfile);
 
 router.use('/posts', posts);
 
