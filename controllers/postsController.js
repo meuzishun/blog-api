@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Post = require('../models/post');
 
-// @desc    Get all posts
+// @desc    Read all posts
 // @route   GET /posts
 // @access  Public
 const getAllPosts = asyncHandler(async (req, res) => {
@@ -13,8 +13,8 @@ const getAllPosts = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Get single post
-// @route   GET /posts/:id
+// @desc    Read a single post
+// @route   GET /posts/:postId
 // @access  Public
 const getSinglePost = asyncHandler(async (req, res) => {
   const post = await Post.findOne({ _id: req.params.postId }).populate(
@@ -27,7 +27,7 @@ const getSinglePost = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Post single post
+// @desc    Create a new post
 // @route   POST /posts
 // @access  Private
 const submitNewPost = asyncHandler(async (req, res) => {
@@ -45,8 +45,8 @@ const submitNewPost = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Delete single post
-// @route   DELETE /posts
+// @desc    Delete a single post
+// @route   DELETE /posts/:postId
 // @access  Private
 const deleteSinglePost = asyncHandler(async (req, res) => {
   await Post.deleteOne({ _id: req.params.postId });
