@@ -37,6 +37,28 @@ const submitNewComment = asyncHandler(async (req, res) => {
   return res.status(201).json({ comment });
 });
 
+// @desc    Update a single comment for a post
+// @route   PUT /posts/:postId/comments/:commentId
+// @access  Private
+const updateSingleComment = asyncHandler(async (req, res) => {
+  const comment = await Comment.findById(req.params.commentId);
+
+  if (!comment) {
+    res.status(400);
+    throw new Error('Comment not found');
+  }
+
+  const updatedComment = await Comment.findByIdAndUpdate(
+    req.params.commentId,
+    req.body,
+    {
+      new: true,
+    }
+  );
+
+  res.status(200).json(updatedComment);
+});
+
 // @desc    Delete a single comment for a post
 // @route   DELETE /posts/:postId/comments/:commentId
 // @access  Private
@@ -52,5 +74,6 @@ module.exports = {
   getAllComments,
   getSingleComment,
   submitNewComment,
+  updateSingleComment,
   deleteSingleComment,
 };
