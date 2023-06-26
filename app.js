@@ -8,6 +8,8 @@ const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
+// TODO: Setup cors configuration (https://www.npmjs.com/package/cors)
+
 app.use(cors());
 app.use(passport.initialize());
 app.use(express.json());
