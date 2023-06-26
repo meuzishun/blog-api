@@ -5,7 +5,7 @@ const Post = require('../models/post');
 // @route   GET /posts
 // @access  Public
 const getAllPosts = asyncHandler(async (req, res) => {
-  const posts = await Post.find({}).populate('author');
+  const posts = await Post.find({ isPublished: true }).populate('author');
 
   return res.status(200).json({ posts });
 });
@@ -30,10 +30,32 @@ const submitNewPost = asyncHandler(async (req, res) => {
     title: req.body.title,
     content: req.body.content,
     timestamp: Date.now(),
-    isPublished: true,
+    isPublished: req.body.isPublished,
   });
 
   return res.status(201).json({ post });
+});
+
+// @desc    Update a single post
+// @route   PUT /posts/:postId
+// @access  Private
+const updateSinglePost = asyncHandler(async (req, res) => {
+  const post = await Post.findById(req.params.postId);
+
+  if (!post) {
+    res.status(400);
+    throw new Error('Post not found');
+  }
+
+  const updatedPost = await Post.findByIdAndUpdate(
+    req.params.postId,
+    req.body,
+    {
+      new: true,
+    }
+  );
+
+  res.status(200).json(updatedPost);
 });
 
 // @desc    Delete a single post
@@ -51,5 +73,6 @@ module.exports = {
   getAllPosts,
   getSinglePost,
   submitNewPost,
+  updateSinglePost,
   deleteSinglePost,
 };

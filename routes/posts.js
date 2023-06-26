@@ -6,6 +6,7 @@ const {
   getAllPosts,
   getSinglePost,
   submitNewPost,
+  updateSinglePost,
   deleteSinglePost,
 } = require('../controllers/postsController');
 
@@ -16,6 +17,8 @@ router.get('/', getAllPosts);
 router.get('/:postId', getSinglePost);
 
 router.post('/', isAuth, titleValidator, contentValidator, submitNewPost);
+
+router.put('/:postId', isAuth, isAdmin, updateSinglePost);
 
 router.delete('/:postId', isAuth, isAdmin, deleteSinglePost);
 
