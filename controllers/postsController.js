@@ -1,13 +1,26 @@
 const asyncHandler = require('express-async-handler');
 const Post = require('../models/post');
+const passport = require('passport');
 
 // @desc    Read all posts
 // @route   GET /posts
 // @access  Public
-const getAllPosts = asyncHandler(async (req, res) => {
-  const posts = await Post.find({ isPublished: true }).populate('author');
+const getAllPosts = asyncHandler((req, res, next) => {
+  passport.authenticate('jwt', { session: false }, async (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
 
-  return res.status(200).json({ posts });
+    if (!user) {
+      const posts = await Post.find({ isPublished: true }).populate('author');
+      return res.status(200).json({ posts });
+    }
+
+    if (user) {
+      const posts = await Post.find().populate('author');
+      return res.status(200).json({ posts });
+    }
+  })(req, res, next);
 });
 
 // @desc    Read a single post
