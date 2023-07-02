@@ -41,6 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   return res.status(201).json({
     user: {
+      id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
@@ -74,6 +75,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     user: {
+      id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
@@ -105,6 +107,7 @@ const userProfile = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     user: {
+      id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
