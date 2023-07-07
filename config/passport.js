@@ -1,12 +1,11 @@
-// const fs = require('fs');
-// const path = require('path');
+const fs = require('fs');
+const path = require('path');
 const User = require('../models/user');
 const passport = require('passport');
 const { Strategy, ExtractJwt } = require('passport-jwt');
 
-// const pathToKey = path.join(__dirname, '..', '/config/id_rsa_pub.pem');
-// const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
-const PUB_KEY = process.env.PUB_KEY;
+const pathToKey = path.join(__dirname, '..', '/config/id_rsa_pub.pem');
+const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

@@ -1,8 +1,8 @@
 require('dotenv').config();
-// if (process.env.NODE_ENV === 'production') {
-//   require('./lib/generateKeyPair');
-// }
-require('./config/database');
+if (process.env.NODE_ENV === 'production') {
+  require('./lib/generateKeyPair');
+}
+const { connectDB } = require('./config/database');
 const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
@@ -20,6 +20,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(routes);
 app.use(errorHandler);
 
-app.listen(process.env.PORT, () =>
-  console.log(`Server listening on port ${process.env.PORT}`)
-);
+connectDB().then(() => {
+  app.listen(process.env.PORT, () =>
+    console.log(`Server listening on port ${process.env.PORT}`)
+  );
+});
