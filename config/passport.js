@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('@cyclic.sh/s3fs');
 const path = require('path');
 const User = require('../models/user');
 const passport = require('passport');
