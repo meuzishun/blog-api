@@ -9,12 +9,19 @@ const passport = require('passport');
 const routes = require('./routes/index');
 const { errorHandler } = require('./middleware/errorHandler');
 const compression = require('compression');
+const helmet = require('helmet');
 
 const app = express();
 
 // TODO: Setup cors configuration (https://www.npmjs.com/package/cors)
 
 app.use(compression());
+app.use(helmet());
+// app.use(
+//   helmet({
+//     crossOriginResourcePolicy: false,
+//   })
+// );
 app.use(cors());
 app.use(passport.initialize());
 app.use(express.json());
