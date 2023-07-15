@@ -11,22 +11,33 @@ const { errorHandler } = require('./middleware/errorHandler');
 const compression = require('compression');
 const helmet = require('helmet');
 const RateLimit = require('express-rate-limit');
+
 const limiter = RateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 20,
 });
+
+const whitelist = [
+  'https://meuzishun.github.io/blog-client-author',
+  'https://meuzishun.github.io/blog-client',
+  'http://127.0.0.1:5173',
+];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+};
 
 const app = express();
 
 app.use(limiter);
 app.use(compression());
 app.use(helmet());
-// app.use(
-//   helmet({
-//     crossOriginResourcePolicy: false,
-//   })
-// );
-app.use(cors()); // TODO: Setup cors configuration (https://www.npmjs.com/package/cors)
+app.use(cors(corsOptions));
 app.use(passport.initialize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
