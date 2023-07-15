@@ -13,14 +13,13 @@ const helmet = require('helmet');
 const RateLimit = require('express-rate-limit');
 
 const limiter = RateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
+  windowMs: 1 * 60 * 1000,
   max: 20,
 });
 
 const whitelist = [
   'https://meuzishun.github.io/blog-client-author',
   'https://meuzishun.github.io/blog-client',
-  'http://127.0.0.1:5173',
 ];
 const corsOptions = {
   origin: function (origin, callback) {
