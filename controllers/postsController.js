@@ -11,12 +11,12 @@ const getAllPosts = asyncHandler((req, res, next) => {
       return next(err);
     }
 
-    if (!user) {
+    if (!user || !user.isAdmin) {
       const posts = await Post.find({ isPublished: true }).populate('author');
       return res.status(200).json({ posts });
     }
 
-    if (user) {
+    if (user.isAdmin) {
       const posts = await Post.find().populate('author');
       return res.status(200).json({ posts });
     }
