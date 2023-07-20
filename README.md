@@ -1,58 +1,77 @@
 # Blog API
 
-This repository is part of a Blog App project completed for partial fulfillment of the curriculum of The Odin Project. The project is made up of a backend API and two frontend SPAs. See the links below for the other repositories:
+This repository is part of a Blog App project completed for partial fulfillment of the curriculum of [The Odin Project](https://www.theodinproject.com/). The project is made up of a backend [API](https://en.wikipedia.org/wiki/API) and two frontend [SPA](https://en.wikipedia.org/wiki/Single-page_application)s. See below for live links and other repositories:
 
 - Click [here](https://github.com/meuzishun/blog-client) for the Client repository and [here](https://meuzishun.github.io/blog-client/) for the live site
 - Click [here](https://github.com/meuzishun/blog-client-author) for the Client-Author repository and [here](https://meuzishun.github.io/blog-client-author/) for the live site
 
 ## Overview
 
-## Journal
+The structure of this app is rather standard. A few aspects are worth pointing out.
 
-I began the process by creating the models for the data needed: user, post, comment. I make a list for each model, outlining what data was needed for each.
+1. The database connection needs to occur before the server starts due to the requirements of the PaaS:
 
-User:
-
-- firstname
-- lastname
-- email (used for log in)
-- hashed password
-- isAdmin (Boolean)
-
-Post:
-
-- author
-- title
-- content
-- timestamp
-- isPublished (Boolean)
-
-Comment:
-
-- author
-- post
-- content
-- timestamp
-
-Since I am using MongoDB, I installed mongoose and imported it to each file to create schemas and later exporting the models. Most of the data for each schema was required. Several data types were string, but some are references to other data types (e.g. a post author is referencing a user's id). I referenced models from previous projects so I copied over a virtual for each model that just returns the url with the database id... not sure if they'll be needed. Then I setup the database on MongoDB. Not too much going on here yet, just grabbed the connection url and stored it in a .env file (make sure to add the .env to the .gitignore file!).
-
-Next I created the express app. I wanted to make sure to only import necessary packages to the main app file to keep it as simple as possible. Install and import express, create the app, listen on port 3000 and log to make sure it is working. I put a port value in the .env file and installed and imported the dotenv package to use environment variables in the app file.
-
-After that, I started working on the routes. At first I wanted to house all the routes in an index file as I had seen done elsewhere, but I decided that they should be nested, comments inside of posts. To do this and still have access to the outer req.params, there is an additional setting for the express.Router():
-
-```
-const router = require('express').Router({ mergeParams: true });
+```js
+connectDB().then(() => {
+  app.listen(process.env.PORT, () =>
+    console.log(`Server listening on port ${process.env.PORT}`)
+  );
+});
 ```
 
-I used the app Postman to test these routes. Postman lets you store your test routes in a collection for reuse. It is a good idea to name and save the post tabs in Postman to a collection for future reuse.
+2. Routes are nested:
 
-I then extracted the post and comment controllers and put them in separate files from the routes. Generally considered good practice and I also find it very helpful to conceptualize everything this way. As of this point, the controllers were just sending basic JSON to confirm that they were hooked up properly.
+```js
+// App.js
+const routes = require('./routes/index');
+app.use(routes);
+```
 
-Up next was the database. I just setup a MongoDB and got the connection URL which I stored in the .env file. I did create a special file, "database.js", for creating the database connection with mongoose and put it in a new directory, "config". Again, separation of concerns. This "config" directory was helpful later on with authentication and authorization.
+```js
+// routes/index.js
+const posts = require('./posts');
+router.use('/posts', posts);
+```
 
-When working on registering and logging in users, I decided to extract these controllers as well, "authorizationController.js".
+```js
+// routes/posts.js
+const comments = require('./comments');
+router.use('/:postId/comments', comments);
+```
 
-- lib directory holds validators, issueJWT, generation of key pairs
-- authentication and authorization, PassportJS, extracting isAuth and isAdmin
-- thing about Passport passing on user after auth
-- post and comment controllers, try/catch, checks that don't work
+3. Validation and authentication middlewares are abstracted and added to routes inline:
+
+```js
+// routes/index.js
+const { emailValidator, checkValidations } = require('../lib/inputValidators');
+router.post('/login', emailValidator, checkValidations, loginUser);
+```
+
+4. Controllers use the `express-async-handler` so errors can be passed directly to error handling middleware without using the `next` parameter:
+
+```js
+// postsController.js
+const asyncHandler = require('express-async-handler');
+const Post = require('../models/post');
+
+// @desc    Read a single post
+// @route   GET /posts/:postId
+// @access  Public
+const getSinglePost = asyncHandler(async (req, res) => {
+  const post = await Post.findOne({ _id: req.params.postId }).populate(
+    'author'
+  );
+
+  return res.status(200).json({ post });
+});
+
+// other controller functions...
+```
+
+5. The JWT authentication uses public and private keys which need to be generated on the server. The `fs` module in NodeJS isn't allowed in the PaaS so another library is needed:
+
+```js
+const fs = require('@cyclic.sh/s3fs')(process.env.CYCLIC_BUCKET_NAME);
+```
+
+If the environment is development rather than production, the standard `fs` module is defaulted to.
