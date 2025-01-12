@@ -74,4 +74,4 @@ const getSinglePost = asyncHandler(async (req, res) => {
 const fs = require('@cyclic.sh/s3fs')(process.env.CYCLIC_BUCKET_NAME);
 ```
 
-If the environment is development rather than production, the standard `fs` module is defaulted to.
+If the environment is development rather than production, the standard `fs` module is defaulted to. This seems to be an issue when deploying to Railway. Removed code above and replaced with NodeJS fs.

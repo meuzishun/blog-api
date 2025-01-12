@@ -1,5 +1,5 @@
 require('dotenv').config();
-const fs = require('@cyclic.sh/s3fs')(process.env.CYCLIC_BUCKET_NAME);
+const fs = require('fs');
 const path = require('path');
 const User = require('../models/user');
 const passport = require('passport');
