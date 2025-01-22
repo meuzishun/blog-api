@@ -12,6 +12,7 @@ const {
   loginUser,
   userProfile,
 } = require('../controllers/authorizationController');
+const { isAuth } = require('../config/passport');
 
 router.post(
   '/register',
@@ -25,7 +26,7 @@ router.post(
 
 router.post('/login', emailValidator, checkValidations, loginUser);
 
-router.get('/profile', userProfile);
+router.get('/profile', isAuth, userProfile);
 
 router.use('/posts', posts);
 

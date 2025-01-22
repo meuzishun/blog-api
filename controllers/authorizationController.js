@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
-const { issueJWT, getUserIdFromJWT } = require('../lib/utils');
+const { issueJWT } = require('../lib/utils');
 
 // @desc    Register new user
 // @route   POST /register
@@ -89,16 +89,7 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route   GET /profile
 // @access  Private
 const userProfile = asyncHandler(async (req, res) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  const userId = getUserIdFromJWT(token);
-
-  if (!userId) {
-    res.status(401);
-    throw new Error('Not verified');
-  }
-
-  const user = await User.findById(userId);
+  const user = req.user;
 
   if (!user) {
     res.status(400);
